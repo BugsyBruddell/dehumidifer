@@ -32,8 +32,8 @@ class WebLogger:
 
         # Plotting data
         plt.figure(figsize=(10, 5))
-        sns.lineplot(times, temps, label="Temperature (°C)")
-        sns.lineplot(times, hums, label="Humidity (%)")
+        sns.lineplot(x=times, y=temps, label="Temperature (°C)")
+        sns.lineplot(x=times, y=hums, label="Humidity (%)")
         plt.xticks(rotation=45)
         plt.tight_layout()
         plt.savefig("/var/www/html/enviro_graph.png")
