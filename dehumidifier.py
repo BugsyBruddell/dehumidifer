@@ -2,14 +2,16 @@ import Adafruit_DHT
 import time
 from relay_control import RelayControl
 from logger import Logger
+from web_logger import WebLogger  # Import the WebLogger class
 
 # Sensor Setup
 DHT_PIN = 23
 SENSOR_TYPE = Adafruit_DHT.DHT22
 
-# Create instances of RelayControl and Logger classes
+# Create instances of RelayControl, Logger, and WebLogger classes
 relay = RelayControl()
 logger = Logger('./logs/enviro.txt', './logs/relay-activity.txt', './logs/STATE')
+web_logger = WebLogger('./logs/relay-activity.txt', './logs/enviro.txt', './logs/STATE', '/var/www/html/index.html')
 
 # Load the initial state of the dehumidifier from the STATE file
 initial_state = logger.get_state()
@@ -20,6 +22,8 @@ else:
 
 relay_3_triggered = False
 relay_4_triggered = 0
+
+update_counter = 0  # Counter to track when to update the HTML file
 
 try:
     while True:
@@ -57,6 +61,12 @@ try:
             logger.set_state("ON")
         else:
             logger.set_state("OFF")
+
+        # Increment and check the update counter
+        update_counter += 1
+        if update_counter >= 6:  # 5 seconds * 6 = 30 seconds
+            web_logger.generate_html()
+            update_counter = 0
 
         time.sleep(5)
 
