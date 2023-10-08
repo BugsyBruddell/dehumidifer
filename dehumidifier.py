@@ -7,14 +7,19 @@ from logger import Logger
 DHT_PIN = 23
 SENSOR_TYPE = Adafruit_DHT.DHT22
 
-# State Variables
-power_turned_on = False
-relay_3_triggered = False
-relay_4_triggered = 0
-
 # Create instances of RelayControl and Logger classes
 relay = RelayControl()
-logger = Logger('./logs/enviro.txt', './logs/relay-activity.txt')
+logger = Logger('./logs/enviro.txt', './logs/relay-activity.txt', './logs/STATE')
+
+# Load the initial state of the dehumidifier from the STATE file
+initial_state = logger.get_state()
+if initial_state == "ON":
+    power_turned_on = True
+else:
+    power_turned_on = False
+
+relay_3_triggered = False
+relay_4_triggered = 0
 
 try:
     while True:
@@ -46,6 +51,12 @@ try:
                 power_turned_on = False
                 relay_3_triggered = False
                 relay_4_triggered = 0
+
+        # Set state after relay actions
+        if power_turned_on:
+            logger.set_state("ON")
+        else:
+            logger.set_state("OFF")
 
         time.sleep(5)
 
