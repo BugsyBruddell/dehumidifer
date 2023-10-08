@@ -4,7 +4,6 @@ from relay_control import RelayControl
 from logger import Logger
 from web_logger import WebLogger  # Import the WebLogger class
 
-GPIO.setwarnings(False)
 
 # Sensor Setup
 DHT_PIN = 23
