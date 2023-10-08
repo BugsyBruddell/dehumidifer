@@ -28,7 +28,7 @@ class WebLogger:
                 temp, hum = data.split(',')
                 times.append(time.strip())
                 temps.append(float(temp.split('Temperature: ')[1].split('°C')[0]))
-                hums.append(float(hum.split(' ')[1]))
+                hums.append(float(hum.split('Humidity: ')[1].split('%')[0]))
 
         # Plotting data
         plt.figure(figsize=(10, 5))
