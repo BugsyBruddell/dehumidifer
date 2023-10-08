@@ -1,4 +1,16 @@
-# ... [Other imports and setup]
+import Adafruit_DHT
+import time
+from relay_control import RelayControl
+from logger import Logger
+
+# Sensor Setup
+DHT_PIN = 23
+SENSOR_TYPE = Adafruit_DHT.DHT22
+
+# State Variables
+power_turned_on = False
+relay_3_triggered = False
+relay_4_triggered = 0
 
 # Create instances of RelayControl and Logger classes
 relay = RelayControl()
