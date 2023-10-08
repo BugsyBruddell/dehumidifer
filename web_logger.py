@@ -32,9 +32,15 @@ class WebLogger:
 
         # Plotting data
         plt.figure(figsize=(10, 5))
-        sns.lineplot(x=times, y=temps, label="Temperature (°C)")
-        sns.lineplot(x=times, y=hums, label="Humidity (%)")
-        plt.xticks(rotation=45)
+        
+        # Plot temperature and adjust the X-axis
+        plot_temp = sns.lineplot(x=times, y=temps, label="Temperature (°C)")
+        plot_temp.set_xticks(plot_temp.get_xticks()[::int(len(times)/10)])  # Use every 10th timestamp for clarity
+        plot_temp.set_xticklabels([times[i] for i in plot_temp.get_xticks().astype(int)], rotation=45)
+        
+        # Plot humidity
+        plot_hum = sns.lineplot(x=times, y=hums, label="Humidity (%)")
+        
         plt.tight_layout()
         plt.savefig("/var/www/html/enviro_graph.png")
 
