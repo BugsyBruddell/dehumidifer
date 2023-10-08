@@ -24,7 +24,7 @@ class WebLogger:
         times, temps, hums = [], [], []
         with open(self.enviro_log_path, 'r') as file:
             for line in file:
-                time, data = line.split(":")
+                time, data = line.split(":", 1)
                 temp, hum = data.split(',')
                 times.append(time.strip())
                 temps.append(float(temp.split(' ')[1]))
