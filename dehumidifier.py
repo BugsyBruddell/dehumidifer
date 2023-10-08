@@ -23,7 +23,7 @@ try:
         log_message = f"{current_time}: Temperature: {temperature_celsius:.2f}°C, Humidity: {humidity:.2f}%"
         logger.log(log_message)
 
-        if humidity > 60:
+        if humidity > 45:
             if not power_turned_on:
                 relay.activate_relay(relay.RELAY_PIN_1)
                 power_turned_on = True
