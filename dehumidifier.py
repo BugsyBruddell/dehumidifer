@@ -4,7 +4,6 @@ from relay_control import RelayControl
 from logger import Logger
 from web_logger import WebLogger  # Import the WebLogger class
 
-
 # Sensor Setup
 DHT_PIN = 23
 SENSOR_TYPE = Adafruit_DHT.DHT22
@@ -26,6 +25,11 @@ relay_4_triggered = 0
 
 update_counter = 0  # Counter to track when to update the HTML file
 
+# Initialize timer variables
+dehumidifier_on_time = 0
+dehumidifier_off_time = 0
+defrost_cycle = False
+
 try:
     while True:
         humidity, temperature_celsius = Adafruit_DHT.read_retry(SENSOR_TYPE, DHT_PIN)
@@ -38,6 +42,7 @@ try:
                 relay.activate_relay(relay.RELAY_PIN_1)
                 logger.log_relay_activity(f"{current_time}: Activated Relay 1 (Power Supply)")
                 power_turned_on = True
+                dehumidifier_on_time = time.time()
 
             if not relay_3_triggered:
                 relay.activate_relay(relay.RELAY_PIN_3)
@@ -56,6 +61,13 @@ try:
                 power_turned_on = False
                 relay_3_triggered = False
                 relay_4_triggered = 0
+                dehumidifier_off_time = time.time()
+
+                # Check if the dehumidifier has been running for 6 hours
+                if dehumidifier_off_time - dehumidifier_on_time >= 6 * 3600:  # 6 hours in seconds
+                    logger.log_relay_activity(f"{current_time}: Dehumidifier ran for 6 hours. Entering defrost cycle.")
+                    time.sleep(300)  # Wait for 5 minutes (300 seconds) for defrost
+                    defrost_cycle = True
 
         # Set state after relay actions
         if power_turned_on:
