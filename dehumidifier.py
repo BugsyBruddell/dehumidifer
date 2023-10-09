@@ -30,6 +30,9 @@ dehumidifier_on_time = 0
 dehumidifier_off_time = 0
 defrost_cycle = False
 
+# Initialize the cooldown timer
+cooldown_timer = 0
+
 try:
     while True:
         humidity, temperature_celsius = Adafruit_DHT.read_retry(SENSOR_TYPE, DHT_PIN)
@@ -37,7 +40,7 @@ try:
         log_message = f"{current_time}: Temperature: {temperature_celsius:.2f}°C, Humidity: {humidity:.2f}%"
         logger.log_env_data(log_message)
 
-        if humidity > 45:
+        if humidity > 45 and cooldown_timer <= 0:
             if not power_turned_on:
                 relay.activate_relay(relay.RELAY_PIN_1)
                 logger.log_relay_activity(f"{current_time}: Activated Relay 1 (Power Supply)")
@@ -68,6 +71,13 @@ try:
                     logger.log_relay_activity(f"{current_time}: Dehumidifier ran for 6 hours. Entering defrost cycle.")
                     time.sleep(300)  # Wait for 5 minutes (300 seconds) for defrost
                     defrost_cycle = True
+
+                # Set the cooldown timer to 300 seconds (5 minutes)
+                cooldown_timer = 300
+
+        # Decrement the cooldown timer if it is greater than zero
+        if cooldown_timer > 0:
+            cooldown_timer -= 5  # Decrement by 5 seconds
 
         # Set state after relay actions
         if power_turned_on:
