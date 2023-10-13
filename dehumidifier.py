@@ -72,4 +72,31 @@ try:
             if power_turned_on:
                 relay.activate_relay(relay.RELAY_PIN_1)
                 logger.log_relay_activity(f"{current_time}: Deactivated Relay 1 (Power Supply)")
-                power_turned
+                power_turned_on = False
+                relay_3_triggered = False
+                relay_4_triggered = 0
+                dehumidifier_off_time = time.time()
+
+                # Set the cooldown timer to 300 seconds (5 minutes)
+                cooldown_timer = 300
+
+        # Decrement the cooldown timer if it is greater than zero
+        if cooldown_timer > 0:
+            cooldown_timer -= 5  # Decrement by 5 seconds
+
+        # Set state after relay actions
+        if power_turned_on:
+            logger.set_state("ON")
+        else:
+            logger.set_state("OFF")
+
+        # Increment and check the update counter
+        update_counter += 1
+        if update_counter >= 6:  # 5 seconds * 6 = 30 seconds
+            web_logger.generate_html()
+            update_counter = 0
+
+        time.sleep(5)
+
+except KeyboardInterrupt:
+    relay.cleanup()
