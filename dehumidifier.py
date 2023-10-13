@@ -25,6 +25,9 @@ relay_4_triggered = 0
 
 update_counter = 0  # Counter to track when to update the HTML file
 
+# Create and open a status log file
+status_log_file = open('./logs/status.txt', 'w')
+
 # Initialize timer variables
 dehumidifier_on_time = 0
 dehumidifier_off_time = 0
@@ -42,6 +45,11 @@ try:
         current_time = time.strftime("%Y-%m-%d %H:%M:%S")
         log_message = f"{current_time}: Temperature: {temperature_celsius:.2f}°C, Humidity: {humidity:.2f}%"
         logger.log_env_data(log_message)
+
+        # Write timer variable status to the status log file
+        status_log_file.write(f"power_turned_on: {power_turned_on}, defrost_cycle: {defrost_cycle}, "
+                             f"cooldown_timer: {cooldown_timer}, hourly_timer: {hourly_timer}\n")
+        status_log_file.flush()  # Make sure the data is written to the file
 
         # Check if it's time to initiate the hourly defrost cycle
         if power_turned_on and (time.time() - hourly_timer) >= 3600:  # 3600 seconds = 1 hour
@@ -100,3 +108,4 @@ try:
 
 except KeyboardInterrupt:
     relay.cleanup()
+    status_log_file.close()  # Close the status log file when the script is terminated
